@@ -1,0 +1,113 @@
+{
+  "icons": {
+    "PeptideSciences": {
+      "url": "https://i.ibb.co/VcmW0fyc/image.png",
+      "affiliateCode": "CLUB",
+      "discount": "35%"
+    },
+    "OnyxResearch": {
+      "url": "https://i.ibb.co/RT9QJFJz/image.png",
+      "affiliateCode": "CLUB",
+      "discount": "42%"
+    },
+    "NuSciencePeptides": {
+      "url": "https://i.ibb.co/bM1KZSWR/image.png",
+      "affiliateCode": "CLUB",
+      "discount": "31%"
+    },
+    "AminoClub": {
+      "url": "https://i.ibb.co/Ps1grgRw/image.png",
+      "affiliateCode": "CLUB",
+      "discount": "20%"
+    }
+  },
+  "peptides": {
+
+
+    "GHK-Cu": [
+      {
+        "name": "PeptideSciences",
+        "sizes": {
+          "50mg": {
+            "pricePerML": 1.4,
+            "note": "More $ taken off for very lage purchases."
+          }
+        },
+        "url": "https://www.peptidesciences.com/ghk-cu-50mg-copper-peptide",
+        "lastUpdated": 1769731200
+      },
+      {
+        "name": "AminoClub",
+        "sizes": {
+          "50mg": {
+            "pricePerML": 1.47
+          },
+          "100mg": {
+            "pricePerML": 1.56
+          }
+        },
+        "url": "https://aminoclub.com?utm_source=affiliate_marketing&code=CLUB",
+        "lastUpdated": 1769731200
+      },
+      {
+        "name": "NuSciencePeptides",
+        "sizes": {
+          "50mg": {
+            "pricePerML": 0.89
+          },
+          "100mg": {
+            "pricePerML": 0.79
+          }
+        },
+        "url": "https://nusciencepeptides.com/product/ghk-cu/",
+        "lastUpdated": 1769731200
+      }
+    ],
+
+
+    "GLP-3-RT": [
+      {
+        "name": "Onyx Research",
+        "sizes": {
+          "10mg": {
+            "pricePerML": 8.50
+          },
+          "20mg": {
+            "pricePerML": 7.75
+          },
+          "30mg": {
+            "pricePerML": 6.30
+          },
+          "60mg": {
+            "pricePerML": 4.66
+          }
+        },
+        "url": "https://onyxresearch.shop/product/glp-3-rt/",
+        "lastUpdated": 1768902480
+      },
+      {
+        "name": "NuSciencePeptides",
+        "sizes": {
+          "5mg": {
+            "pricePerML": 17.80
+          },
+          "10mg": {
+            "pricePerML": 13.90
+          },
+          "20mg": {
+            "pricePerML": 11.45
+          },
+          "30mg": {
+            "pricePerML": 9.60
+          },
+          "40mg": {
+            "pricePerML": 9.96
+          }
+        },
+        "url": "https://nusciencepeptides.com/product/glp-3-rt/",
+        "currentPricePerML": 13.8,
+        "lastUpdated": 1767902480
+      }
+    ]
+  }
+}
