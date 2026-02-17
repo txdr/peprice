@@ -8,7 +8,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Optional: Add a simple log for the root path if needed, but the static middleware handles the files
 app.get('/', (req, res) => {
-    console.log('Root path requested, serving index.html from public directory.');
+    console.log('Root path requested, serving index.html from public directory.')
 });
 
 // Start the server
