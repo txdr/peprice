@@ -3,348 +3,516 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peptide Price Tracker</title>
-
+    <title>PeptideClub — Price Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root{
-            --bg:#f6f7f9;
-            --card:#ffffffcc;
-            --text:#111;
-            --muted:#666;
-            --border:#e8e8e8;
-            --accent:#111;
+        :root {
+            --bg: #f7f9fc;
+            --surface: #ffffff;
+            --surface2: #f0f4f8;
+            --border: rgba(0,0,0,0.07);
+            --text: #0d1117;
+            --muted: #8a9ab0;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59,130,246,0.18);
+            --orange: #ff7220;
+            --orange-glow: rgba(255,114,32,0.22);
+            --green: #22c55e;
+            --green-glow: rgba(34,197,94,0.15);
+            --radius: 16px;
+            --radius-sm: 10px;
         }
 
-        @media (prefers-color-scheme:dark){
-            :root{
-                --bg:#0e0e11;
-                --card:#1a1a1dcc;
-                --text:#f5f5f7;
-                --muted:#9a9aa1;
-                --border:#2a2a2e;
-                --accent:#fff;
-            }
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body{
-            margin:0;
-            font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial;
-            background:var(--bg);
-            color:var(--text);
+        body {
+            font-family: 'DM Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
             overflow-x: hidden;
         }
 
-        header{
-            backdrop-filter:blur(12px);
-            background:rgba(255,255,255,.6);
-            border-bottom:1px solid var(--border);
-            padding:26px 20px;
-            position:sticky;
-            top:0;
+        /* Soft bg blobs */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -200px; left: -200px;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(59,130,246,0.09) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -150px; right: -150px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255,114,32,0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        @media(prefers-color-scheme:dark){
-            header{background:rgba(20,20,24,.7);}
+        /* Header */
+        header {
+            position: relative; z-index: 10;
+            padding: 52px 40px 36px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
         }
 
-        h1{margin:0 0 14px;}
-
-        #search{
-            width:100%;
-            padding:14px 16px;
-            border-radius:12px;
-            border:1px solid var(--border);
-            background:var(--card);
-            color:var(--text);
+        .header-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(28px, 4vw, 42px);
+            letter-spacing: -1px;
+            line-height: 1;
+            color: var(--text);
+        }
+        .header-title span {
+            color: var(--accent);
+            text-shadow: 0 0 24px var(--accent-glow);
         }
 
-        .container{
-            max-width:1100px;
-            margin:50px auto;
-            padding:0 18px;
+        .header-sub {
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 8px;
         }
 
-        .grid{
-            display:grid;
-            gap:22px;
-            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+        .last-updated-tag {
+            font-size: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            color: var(--muted);
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
-        .card{
-            background:var(--card);
-            backdrop-filter:blur(16px);
-            border:1px solid var(--border);
-            border-radius:16px;
-            padding:22px;
-            animation:fade .5s ease;
-            transition:.25s;
+        /* Main content */
+        main {
+            position: relative; z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
         }
 
-        .card:hover{
-            transform:translateY(-6px);
-            box-shadow:0 12px 40px rgba(0,0,0,.12);
+        /* Peptide section */
+        .peptide-section {}
+
+        .peptide-label {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .peptide-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
         }
 
-        @keyframes fade{
-            from{opacity:0;transform:translateY(10px);}
-            to{opacity:1;transform:translateY(0);}
+        /* Cards grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
         }
 
-        .best{
-            background:linear-gradient(145deg,#fafafa,#f2f2f2);
-            border:1px solid var(--border);
-            padding:14px;
-            border-radius:14px;
-            margin-bottom:14px;
-            font-size:14px;
-            position:relative;
+        /* Card */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            box-shadow: 0 8px 40px rgba(59,130,246,0.10), 0 2px 8px rgba(0,0,0,0.06);
+            transform: translateY(-2px);
+            border-color: rgba(59,130,246,0.18);
         }
 
-        @media(prefers-color-scheme:dark){
-            .best{background:linear-gradient(145deg,#1f1f23,#18181b);}
+        /* Best price badge */
+        .best-badge {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: var(--green);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 20px;
+            box-shadow: 0 0 12px var(--green-glow), 0 2px 8px rgba(34,197,94,0.25);
         }
 
-        .best::after{
-            content:"";
-            position:absolute;
-            inset:0;
-            border-radius:14px;
-            box-shadow:0 0 18px rgba(0,255,170,.25);
-            opacity:.6;
+        /* Card header */
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
         }
 
-        .size-tabs{
-            display:flex;
-            gap:8px;
-            flex-wrap:wrap;
-            margin-bottom:14px;
+        .vendor-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            object-fit: contain;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 4px;
+            flex-shrink: 0;
         }
 
-        .tab{
-            padding:7px 12px;
-            border-radius:999px;
-            border:1px solid var(--border);
-            font-size:12px;
-            cursor:pointer;
-            color:var(--muted);
+        .vendor-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            line-height: 1.2;
+        }
+        .vendor-peptide {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
         }
 
-        .tab.active{
-            background:var(--accent);
-            color:var(--bg);
+        /* Sizes table */
+        .sizes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+        }
+        .sizes-table th {
+            font-size: 9px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 0 0 8px;
+            text-align: left;
+            font-weight: 400;
+        }
+        .sizes-table th:last-child { text-align: right; }
+        .sizes-table td {
+            padding: 7px 0;
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+        }
+        .sizes-table td:last-child { text-align: right; }
+
+        .size-tag {
+            display: inline-block;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            color: var(--text);
+            letter-spacing: 0.04em;
         }
 
-        .vendor{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:12px 0;
-            border-top:1px solid var(--border);
-            animation:fade .3s ease;
+        .price-per-mg {
+            font-weight: 500;
+            color: var(--accent);
+            text-shadow: 0 0 14px var(--accent-glow);
         }
 
-        .vendor-left{
-            display:flex;
-            gap:12px;
-            align-items:center;
+        .best-row td { background: rgba(59,130,246,0.04); }
+        .best-row .price-per-mg {
+            color: var(--green);
+            text-shadow: 0 0 14px var(--green-glow);
         }
 
-        .vendor img{
-            width:38px;
-            height:38px;
-            border-radius:10px;
-            border:1px solid var(--border);
-            background:white;
-            object-fit:contain;
+        .note-text {
+            font-size: 10px;
+            color: var(--muted);
+            font-style: italic;
         }
 
-        .vname{font-weight:600;font-size:14px;}
-        .price{font-size:13px;color:var(--muted);}
-
-        .actions{
-            display:flex;
-            gap:8px;
+        /* Shop row */
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 4px;
         }
 
-        button,a{
-            padding:8px 12px;
-            border-radius:999px;
-            border:1px solid var(--border);
-            font-size:12px;
-            text-decoration:none;
-            background:transparent;
-            color:var(--text);
-            cursor:pointer;
+        .discount-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+        }
+        .discount-code {
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: var(--orange);
+            text-shadow: 0 0 10px var(--orange-glow), 0 0 20px var(--orange-glow);
+            background: rgba(255,114,32,0.08);
+            border: 1px solid rgba(255,114,32,0.25);
+            border-radius: 6px;
+            padding: 3px 8px;
+        }
+        .discount-pct {
+            font-size: 11px;
+            color: var(--orange);
+            text-shadow: 0 0 8px var(--orange-glow);
+            font-weight: 500;
         }
 
-        .shop{
-            background:var(--accent);
-            color:var(--bg);
+        .shop-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent);
+            color: #fff;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            box-shadow: 0 0 18px var(--accent-glow), 0 2px 8px rgba(59,130,246,0.2);
+            transition: box-shadow 0.15s, transform 0.15s, background 0.15s;
+            white-space: nowrap;
+        }
+        .shop-btn:hover {
+            background: #2563eb;
+            box-shadow: 0 0 28px rgba(59,130,246,0.3), 0 4px 12px rgba(59,130,246,0.25);
+            transform: translateY(-1px);
+        }
+        .shop-btn svg {
+            width: 12px; height: 12px;
+            stroke: currentColor; fill: none; stroke-width: 2;
+            stroke-linecap: round; stroke-linejoin: round;
         }
 
-        .note-btn{
-            font-size:11px;
-            opacity:.7;
+        /* Stale indicator */
+        .stale-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--muted);
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+        .fresh-dot {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green-glow);
         }
 
-        footer{
-            text-align:center;
-            color:var(--muted);
-            padding:50px 20px;
-            font-size:13px;
+        @media (max-width: 600px) {
+            header, main { padding-left: 20px; padding-right: 20px; }
+            header { flex-direction: column; align-items: flex-start; }
+        }
+
+        /* Entrance animation */
+        .card {
+            animation: fadeUp 0.4s ease both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-
 <body>
 
 <header>
-    <h1>Peptide Price Tracker</h1>
-    <input id="search" placeholder="Search peptides...">
+    <div>
+        <div class="header-title">Peptide<span>Club</span></div>
+        <div class="header-sub">Research Compound Price Tracker</div>
+    </div>
+    <div class="last-updated-tag" id="last-updated-tag">Loading prices…</div>
 </header>
 
-<div class="container">
-    <div id="grid" class="grid"></div>
-</div>
-
-<footer>
-    Auto-updated pricing • Research purposes only
-</footer>
+<main id="app"></main>
 
 <script>
-    let DATA;
+    const DATA_URL = 'data.json';
 
-    async function load(){
-        const r=await fetch("data.json?"+Date.now());
-        DATA=await r.json();
-        render();
+    function formatDate(ts) {
+        const d = new Date(ts * 1000);
+        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
-    setInterval(load,300000);
-
-    function copy(t){
-        navigator.clipboard.writeText(t);
-        alert("Copied code: "+t);
+    function daysAgo(ts) {
+        return Math.floor((Date.now() - ts * 1000) / 86400000);
     }
 
-    function showNote(n){
-        alert(n);
+    function parseSize(sizeStr) {
+        return parseFloat(sizeStr); // e.g. "50mg" -> 50
     }
 
-    function sizes(vs){
-        const s=new Set();
-        vs.forEach(v=>Object.keys(v.sizes).forEach(x=>s.add(x)));
-        return [...s];
+    function pricePerMg(pricePerML, sizeStr) {
+        const mg = parseSize(sizeStr);
+        if (!mg) return null;
+        return pricePerML / mg;
     }
 
-    function cheapest(vs){
-        let b=null;
-        vs.forEach(v=>{
-            Object.entries(v.sizes).forEach(([s,d])=>{
-                if(!b||d.pricePerML<b.price)
-                    b={name:v.name,size:s,price:d.pricePerML,url:v.url,note:d.note};
-            });
-        });
-        return b;
+    async function load() {
+        let data;
+        try {
+            const res = await fetch(DATA_URL);
+            data = await res.json();
+        } catch(e) {
+            // Inline fallback data for demo purposes
+            data = {"icons":{"PeptideSciences":{"url":"https://i.ibb.co/VcmW0fyc/image.png","affiliateCode":"CLUB","discount":"35%"},"OnyxResearch":{"url":"https://i.ibb.co/RT9QJFJz/image.png","affiliateCode":"CLUB","discount":"42%"},"NuSciencePeptides":{"url":"https://i.ibb.co/bM1KZSWR/image.png","affiliateCode":"CLUB","discount":"31%"},"AminoClub":{"url":"https://i.ibb.co/Ps1grgRw/image.png","affiliateCode":"CLUB","discount":"20%"}},"peptides":{"GHK-Cu":[{"name":"PeptideSciences","sizes":{"50mg":{"pricePerML":1.4,"note":"More $ taken off for very lage purchases."}},"url":"https://www.peptidesciences.com/ghk-cu-50mg-copper-peptide","lastUpdated":1769731200},{"name":"AminoClub","sizes":{"50mg":{"pricePerML":1.47},"100mg":{"pricePerML":1.56}},"url":"https://aminoclub.com?utm_source=affiliate_marketing&code=CLUB","lastUpdated":1769731200},{"name":"NuSciencePeptides","sizes":{"50mg":{"pricePerML":0.89},"100mg":{"pricePerML":0.79}},"url":"https://nusciencepeptides.com/product/ghk-cu/","lastUpdated":1769731200}],"GLP-3-RT":[{"name":"Onyx Research","sizes":{"10mg":{"pricePerML":8.50},"20mg":{"pricePerML":7.75},"30mg":{"pricePerML":6.30},"60mg":{"pricePerML":4.66}},"url":"https://onyxresearch.shop/product/glp-3-rt/","lastUpdated":1768902480},{"name":"NuSciencePeptides","sizes":{"5mg":{"pricePerML":17.80},"10mg":{"pricePerML":13.90},"20mg":{"pricePerML":11.45},"30mg":{"pricePerML":9.60},"40mg":{"pricePerML":9.96}},"url":"https://nusciencepeptides.com/product/glp-3-rt/","lastUpdated":1767902480}]}};
+        }
+        render(data);
     }
 
-    function forSize(vs,size){
-        return vs.filter(v=>v.sizes[size])
-            .map(v=>({
-                name:v.name,
-                price:v.sizes[size].pricePerML,
-                url:v.url,
-                note:v.sizes[size].note
-            }))
-            .sort((a,b)=>a.price-b.price);
+    function getIconInfo(name, icons) {
+        // Try exact match first, then loose
+        if (icons[name]) return icons[name];
+        const key = Object.keys(icons).find(k => k.toLowerCase().replace(/\s/g,'') === name.toLowerCase().replace(/\s/g,''));
+        return key ? icons[key] : null;
     }
 
-    function render(){
-        const grid=document.getElementById("grid");
-        grid.innerHTML="";
-        const q=document.getElementById("search").value.toLowerCase();
+    function render(data) {
+        const app = document.getElementById('app');
+        const icons = data.icons;
+        const peptides = data.peptides;
 
-        Object.entries(DATA.peptides).forEach(([pep,vs])=>{
-            if(!pep.toLowerCase().includes(q))return;
+        // Find global best price/mg for badge
+        // Per peptide, compute all price/mg values, find min
+        const peptideNames = Object.keys(peptides);
 
-            const card=document.createElement("div");
-            card.className="card";
-            card.innerHTML=`<h2>${pep}</h2>`;
+        // Update last updated
+        let allTimestamps = [];
+        peptideNames.forEach(p => peptides[p].forEach(v => { if(v.lastUpdated) allTimestamps.push(v.lastUpdated); }));
+        const latestTs = Math.max(...allTimestamps);
+        document.getElementById('last-updated-tag').textContent = `Updated ${formatDate(latestTs)}`;
 
-            const best=cheapest(vs);
-            const ic=DATA.icons[best.name.replace(/\s/g,"")];
+        peptideNames.forEach((peptideName, pi) => {
+            const vendors = peptides[peptideName];
 
-            const bestBox=document.createElement("div");
-            bestBox.className="best";
-            bestBox.innerHTML=`
-      <strong>Best Price</strong><br>
-      ${best.name} · ${best.size} · $${best.price}/mL
-      <div class="actions" style="margin-top:10px;">
-        <a class="shop" href="${best.url}" target="_blank">Shop</a>
-        <button onclick="copy('${ic?.affiliateCode||""}')">
-          ${ic?.affiliateCode||""} · ${ic?.discount||""}
-        </button>
-        ${best.note ? `<button class="note-btn" onclick="showNote('${best.note}')">Note</button>`:""}
-      </div>`;
-            card.appendChild(bestBox);
-
-            const ss=sizes(vs);
-            let active=ss[0];
-
-            const tabs=document.createElement("div");
-            tabs.className="size-tabs";
-
-            const box=document.createElement("div");
-
-            function draw(){
-                box.innerHTML="";
-                forSize(vs,active).forEach(v=>{
-                    const i=DATA.icons[v.name.replace(/\s/g,"")];
-                    const row=document.createElement("div");
-                    row.className="vendor";
-                    row.innerHTML=`
-          <div class="vendor-left">
-            <img src="${i?.url||""}">
-            <div>
-              <div class="vname">${v.name}</div>
-              <div class="price">$${v.price}/mL</div>
-            </div>
-          </div>
-          <div class="actions">
-            <button onclick="copy('${i?.affiliateCode||""}')">
-              ${i?.affiliateCode||""} · ${i?.discount||""}
-            </button>
-            <a class="shop" href="${v.url}" target="_blank">Shop</a>
-            ${v.note ? `<button class="note-btn" onclick="showNote('${v.note}')">Note</button>`:""}
-          </div>`;
-                    box.appendChild(row);
+            // Compute all price/mg values to find global best for this peptide
+            let allPricesPerMg = [];
+            vendors.forEach(v => {
+                Object.entries(v.sizes).forEach(([size, info]) => {
+                    const p = pricePerMg(info.pricePerML, size);
+                    if (p != null) allPricesPerMg.push(p);
                 });
-            }
+            });
+            const bestPricePerMg = Math.min(...allPricesPerMg);
 
-            ss.forEach(s=>{
-                const t=document.createElement("div");
-                t.className="tab"+(s===active?" active":"");
-                t.textContent=s;
-                t.onclick=()=>{
-                    active=s;
-                    [...tabs.children].forEach(c=>c.classList.remove("active"));
-                    t.classList.add("active");
-                    draw();
-                };
-                tabs.appendChild(t);
+            const section = document.createElement('div');
+            section.className = 'peptide-section';
+            section.style.animationDelay = `${pi * 0.08}s`;
+
+            const label = document.createElement('div');
+            label.className = 'peptide-label';
+            label.textContent = peptideName;
+            section.appendChild(label);
+
+            const grid = document.createElement('div');
+            grid.className = 'cards-grid';
+
+            vendors.forEach((vendor, vi) => {
+                const iconInfo = getIconInfo(vendor.name, icons);
+                const isBestVendor = Object.entries(vendor.sizes).some(([size, info]) => {
+                    const p = pricePerMg(info.pricePerML, size);
+                    return Math.abs(p - bestPricePerMg) < 0.0001;
+                });
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = `${pi * 0.08 + vi * 0.06}s`;
+
+                let html = '';
+
+                if (isBestVendor) {
+                    html += `<div class="best-badge">Best Price</div>`;
+                }
+
+                // Header
+                const logoSrc = iconInfo ? iconInfo.url : '';
+                html += `<div class="card-header">`;
+                if (logoSrc) {
+                    html += `<img class="vendor-logo" src="${logoSrc}" alt="${vendor.name}" onerror="this.style.display='none'">`;
+                }
+                html += `<div>
+        <div class="vendor-name">${vendor.name}</div>
+        <div class="vendor-peptide">
+          <span class="${daysAgo(vendor.lastUpdated) < 14 ? 'fresh-dot' : 'stale-dot'} stale-dot"></span>
+          ${formatDate(vendor.lastUpdated)}
+        </div>
+      </div></div>`;
+
+                // Sizes table
+                html += `<table class="sizes-table">
+        <thead><tr>
+          <th>Size</th>
+          <th>$/mL</th>
+          <th>$/mg</th>
+        </tr></thead>
+        <tbody>`;
+
+                Object.entries(vendor.sizes).forEach(([size, info]) => {
+                    const ppm = pricePerMg(info.pricePerML, size);
+                    const isBestRow = Math.abs(ppm - bestPricePerMg) < 0.0001;
+                    html += `<tr class="${isBestRow ? 'best-row' : ''}">
+          <td><span class="size-tag">${size}</span></td>
+          <td>$${info.pricePerML.toFixed(2)}</td>
+          <td><span class="price-per-mg">$${ppm.toFixed(3)}</span></td>
+        </tr>`;
+                    if (info.note) {
+                        html += `<tr><td colspan="3" class="note-text">${info.note}</td></tr>`;
+                    }
+                });
+
+                html += `</tbody></table>`;
+
+                // Footer
+                html += `<div class="card-footer">`;
+                if (iconInfo) {
+                    html += `<div class="discount-tag">
+          <span class="discount-code">${iconInfo.affiliateCode}</span>
+          <span class="discount-pct">${iconInfo.discount} off</span>
+        </div>`;
+                }
+                html += `<a class="shop-btn" href="${vendor.url}" target="_blank" rel="noopener">
+        Shop
+        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>
+      </a>`;
+                html += `</div>`;
+
+                card.innerHTML = html;
+                grid.appendChild(card);
             });
 
-            card.appendChild(tabs);
-            card.appendChild(box);
-            draw();
-
-            grid.appendChild(card);
+            section.appendChild(grid);
+            app.appendChild(section);
         });
     }
 
-    document.getElementById("search").addEventListener("input",render);
     load();
 </script>
-
 </body>
 </html>
