@@ -1,26 +1,33 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!-- Made by Taylor Radl -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PeptideClub — Price Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>Peprice — Peptide Price Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f7f9fc;
+            --bg: #f5f7fa;
             --surface: #ffffff;
-            --surface2: #f0f4f8;
+            --surface2: #eef1f6;
             --border: rgba(0,0,0,0.07);
+            --border-hover: rgba(59,130,246,0.22);
             --text: #0d1117;
             --muted: #8a9ab0;
             --accent: #3b82f6;
-            --accent-glow: rgba(59,130,246,0.18);
-            --orange: #ff7220;
-            --orange-glow: rgba(255,114,32,0.22);
+            --accent-dim: rgba(59,130,246,0.12);
+            --accent-glow: rgba(59,130,246,0.25);
+            --orange: #f97316;
+            --orange-dim: rgba(249,115,22,0.10);
+            --orange-glow: rgba(249,115,22,0.28);
             --green: #22c55e;
-            --green-glow: rgba(34,197,94,0.15);
-            --radius: 16px;
-            --radius-sm: 10px;
+            --green-dim: rgba(34,197,94,0.10);
+            --green-glow: rgba(34,197,94,0.28);
+            --red: #ef4444;
+            --red-dim: rgba(239,68,68,0.10);
+            --radius: 18px;
+            --shadow: 0 4px 28px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.04);
+            --shadow-hover: 0 10px 44px rgba(59,130,246,0.10), 0 2px 8px rgba(0,0,0,0.06);
         }
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,486 +40,645 @@
             overflow-x: hidden;
         }
 
-        /* Soft bg blobs */
-        body::before {
-            content: '';
+        /* ── Intro overlay ── */
+        #intro {
             position: fixed;
-            top: -200px; left: -200px;
-            width: 700px; height: 700px;
-            background: radial-gradient(circle, rgba(59,130,246,0.09) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: -150px; right: -150px;
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(255,114,32,0.07) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Header */
-        header {
-            position: relative; z-index: 10;
-            padding: 52px 40px 36px;
-            max-width: 1200px;
-            margin: 0 auto;
+            inset: 0;
+            z-index: 1000;
+            background: #f5f7fa;
             display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
             gap: 20px;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+            text-align: center;
+        }
+        #intro.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
         }
 
-        .header-title {
+        /* Wordmark SVG container */
+        .intro-wordmark-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* The text wordmark */
+        .intro-word {
             font-family: 'Syne', sans-serif;
             font-weight: 800;
-            font-size: clamp(28px, 4vw, 42px);
-            letter-spacing: -1px;
+            font-size: 64px;
+            letter-spacing: -3px;
             line-height: 1;
-            color: var(--text);
-        }
-        .header-title span {
-            color: var(--accent);
-            text-shadow: 0 0 24px var(--accent-glow);
-        }
-
-        .header-sub {
-            font-size: 11px;
-            color: var(--muted);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-top: 8px;
-        }
-
-        .last-updated-tag {
-            font-size: 10px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 6px 14px;
-            color: var(--muted);
-            white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-
-        /* Main content */
-        main {
-            position: relative; z-index: 10;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 40px 80px;
             display: flex;
-            flex-direction: column;
-            gap: 48px;
-        }
-
-        /* Peptide section */
-        .peptide-section {}
-
-        .peptide-label {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            letter-spacing: -0.5px;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .peptide-label::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: var(--border);
-        }
-
-        /* Cards grid */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 16px;
-        }
-
-        /* Card */
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.04);
-            transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
-            position: relative;
+            align-items: baseline;
             overflow: hidden;
         }
-        .card:hover {
-            box-shadow: 0 8px 40px rgba(59,130,246,0.10), 0 2px 8px rgba(0,0,0,0.06);
-            transform: translateY(-2px);
-            border-color: rgba(59,130,246,0.18);
-        }
 
-        /* Best price badge */
-        .best-badge {
-            position: absolute;
-            top: 16px; right: 16px;
-            background: var(--green);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 500;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            padding: 4px 10px;
-            border-radius: 20px;
-            box-shadow: 0 0 12px var(--green-glow), 0 2px 8px rgba(34,197,94,0.25);
-        }
-
-        /* Card header */
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .vendor-logo {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            object-fit: contain;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            padding: 4px;
-            flex-shrink: 0;
-        }
-
-        .vendor-name {
-            font-family: 'Syne', sans-serif;
-            font-weight: 600;
-            font-size: 15px;
-            line-height: 1.2;
-        }
-        .vendor-peptide {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        /* Sizes table */
-        .sizes-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 18px;
-        }
-        .sizes-table th {
-            font-size: 9px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--muted);
-            padding: 0 0 8px;
-            text-align: left;
-            font-weight: 400;
-        }
-        .sizes-table th:last-child { text-align: right; }
-        .sizes-table td {
-            padding: 7px 0;
-            font-size: 13px;
-            border-top: 1px solid var(--border);
-        }
-        .sizes-table td:last-child { text-align: right; }
-
-        .size-tag {
-            display: inline-block;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 2px 8px;
-            font-size: 11px;
+        .intro-pep {
             color: var(--text);
-            letter-spacing: 0.04em;
+            display: inline-block;
+            clip-path: inset(0 100% 0 0);
+            animation: revealLeft 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
         }
 
-        .price-per-mg {
-            font-weight: 500;
+        .intro-rice {
             color: var(--accent);
-            text-shadow: 0 0 14px var(--accent-glow);
+            text-shadow: 0 0 40px var(--accent-glow);
+            display: inline-block;
+            clip-path: inset(0 100% 0 0);
+            animation: revealLeft 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
         }
 
-        .best-row td { background: rgba(59,130,246,0.04); }
-        .best-row .price-per-mg {
-            color: var(--green);
-            text-shadow: 0 0 14px var(--green-glow);
+        @keyframes revealLeft {
+            from { clip-path: inset(0 100% 0 0); }
+            to   { clip-path: inset(0 0% 0 0); }
         }
 
-        .note-text {
-            font-size: 10px;
-            color: var(--muted);
-            font-style: italic;
-        }
-
-        /* Shop row */
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 4px;
-        }
-
-        .discount-tag {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-        }
-        .discount-code {
-            font-weight: 500;
-            letter-spacing: 0.08em;
-            color: var(--orange);
-            text-shadow: 0 0 10px var(--orange-glow), 0 0 20px var(--orange-glow);
-            background: rgba(255,114,32,0.08);
-            border: 1px solid rgba(255,114,32,0.25);
-            border-radius: 6px;
-            padding: 3px 8px;
-        }
-        .discount-pct {
-            font-size: 11px;
-            color: var(--orange);
-            text-shadow: 0 0 8px var(--orange-glow);
-            font-weight: 500;
-        }
-
-        .shop-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--accent);
-            color: #fff;
+        /* Tagline fade */
+        .intro-tag {
             font-family: 'DM Mono', monospace;
             font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            text-decoration: none;
-            padding: 9px 18px;
-            border-radius: 8px;
-            box-shadow: 0 0 18px var(--accent-glow), 0 2px 8px rgba(59,130,246,0.2);
-            transition: box-shadow 0.15s, transform 0.15s, background 0.15s;
-            white-space: nowrap;
+            color: var(--muted);
+            opacity: 0;
+            animation: fadeInTag 0.5s ease 1.15s forwards;
         }
-        .shop-btn:hover {
-            background: #2563eb;
-            box-shadow: 0 0 28px rgba(59,130,246,0.3), 0 4px 12px rgba(59,130,246,0.25);
-            transform: translateY(-1px);
+        @keyframes fadeInTag { to { opacity: 1; } }
+
+        /* Pulse dot under tagline */
+        .intro-pulse {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green-glow);
+            opacity: 0;
+            animation: fadeInTag 0.4s ease 1.3s forwards;
+            position: relative;
         }
-        .shop-btn svg {
-            width: 12px; height: 12px;
-            stroke: currentColor; fill: none; stroke-width: 2;
-            stroke-linecap: round; stroke-linejoin: round;
+        .intro-pulse::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: var(--green);
+            animation: livePulse 1.8s ease-out 1.3s infinite;
         }
 
-        /* Stale indicator */
-        .stale-dot {
-            display: inline-block;
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: var(--muted);
-            margin-right: 4px;
-            vertical-align: middle;
+        /* ── Page blobs ── */
+        .blob { position: fixed; pointer-events: none; z-index: 0; border-radius: 50%; filter: blur(80px); }
+        .blob-1 { width: 600px; height: 600px; top: -200px; left: -150px; background: radial-gradient(circle, rgba(59,130,246,0.10), transparent 70%); }
+        .blob-2 { width: 500px; height: 500px; bottom: -150px; right: -100px; background: radial-gradient(circle, rgba(249,115,22,0.08), transparent 70%); }
+        .blob-3 { width: 400px; height: 400px; top: 40%; left: 50%; transform: translate(-50%,-50%); background: radial-gradient(circle, rgba(34,197,94,0.05), transparent 70%); }
+
+        /* ── Main wrap ── */
+        .wrap {
+            position: relative; z-index: 1;
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 36px 80px;
+            opacity: 0;
+            transition: opacity 0.5s ease 0.1s;
         }
-        .fresh-dot {
-            background: var(--green);
-            box-shadow: 0 0 6px var(--green-glow);
+        .wrap.visible { opacity: 1; }
+
+        /* ── Header ── */
+        header { padding: 52px 0 36px; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+        .wordmark { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(30px, 4.5vw, 46px); letter-spacing: -2px; line-height: 1; }
+        .wordmark em { font-style: normal; color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
+        .tagline { margin-top: 10px; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+        /* Live badge */
+        .live-badge { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 8px 16px; box-shadow: var(--shadow); font-size: 11px; color: var(--muted); }
+        .live-dot-wrap { position: relative; width: 10px; height: 10px; flex-shrink: 0; }
+        .live-dot { position: absolute; inset: 0; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+        .live-dot-ring { position: absolute; inset: 0; border-radius: 50%; background: var(--green); opacity: 0.5; animation: livePulse 2s ease-out infinite; }
+        @keyframes livePulse { 0% { transform: scale(1); opacity: 0.55; } 70% { transform: scale(2.6); opacity: 0; } 100% { transform: scale(2.6); opacity: 0; } }
+        .live-text { color: var(--green); font-weight: 500; letter-spacing: 0.06em; text-shadow: 0 0 8px var(--green-glow); }
+        .live-date { color: var(--muted); }
+
+        /* ── Search ── */
+        .search-wrap { margin-bottom: 28px; position: relative; }
+        .search-wrap svg.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; stroke: var(--muted); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; transition: stroke 0.15s; }
+        #search { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 13px 16px 13px 42px; font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); box-shadow: var(--shadow); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+        #search::placeholder { color: var(--muted); }
+        #search:focus { border-color: rgba(59,130,246,0.35); box-shadow: 0 0 0 3px rgba(59,130,246,0.08), var(--shadow); }
+        .search-wrap:focus-within svg.search-icon { stroke: var(--accent); }
+
+        /* ── Accordion block ── */
+        .peptide-block { margin-bottom: 12px; border-radius: 16px; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow); overflow: hidden; transition: border-color 0.2s; }
+        .peptide-block.open { border-color: rgba(59,130,246,0.18); }
+
+        .peptide-toggle { width: 100%; background: none; border: none; cursor: pointer; padding: 18px 22px; display: flex; align-items: center; gap: 14px; text-align: left; transition: background 0.15s; }
+        .peptide-toggle:hover { background: var(--surface2); }
+        .toggle-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: -0.3px; color: var(--text); flex: 1; }
+        .toggle-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .vendor-count { font-size: 10px; letter-spacing: 0.08em; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; }
+        .best-price-preview { font-size: 11px; color: var(--green); text-shadow: 0 0 10px var(--green-glow); background: var(--green-dim); border: 1px solid rgba(34,197,94,0.22); border-radius: 20px; padding: 3px 10px; font-weight: 500; }
+        .chevron { width: 16px; height: 16px; stroke: var(--muted); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.25s ease, stroke 0.15s; flex-shrink: 0; }
+        .peptide-block.open .chevron { transform: rotate(180deg); stroke: var(--accent); }
+
+        .accordion-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s ease; }
+        .peptide-block.open .accordion-body { grid-template-rows: 1fr; }
+        .accordion-inner { overflow: hidden; }
+        .cards-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; padding: 0 16px 16px; }
+
+        /* ── Card ── */
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 2px 12px rgba(0,0,0,0.04); overflow: hidden; transition: box-shadow 0.22s, border-color 0.22s, transform 0.18s; display: flex; flex-direction: column; animation: fadeUp 0.3s ease both; }
+        .card:hover { box-shadow: var(--shadow-hover); border-color: var(--border-hover); transform: translateY(-2px); }
+        .card.is-best { border-color: rgba(34,197,94,0.30); box-shadow: 0 0 0 1px rgba(34,197,94,0.14), 0 2px 12px rgba(0,0,0,0.04); }
+
+        /* Card top */
+        .card-top { padding: 16px 18px 12px; display: flex; align-items: center; gap: 11px; border-bottom: 1px solid var(--border); }
+        .vendor-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; background: var(--surface2); border: 1px solid var(--border); padding: 4px; flex-shrink: 0; }
+        .logo-fallback { width: 40px; height: 40px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: var(--muted); flex-shrink: 0; }
+        .vendor-info { flex: 1; min-width: 0; }
+        .vendor-name { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 13px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vendor-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+        .vendor-date { font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+        .dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+        .dot-fresh { background: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+        .dot-stale { background: var(--muted); }
+
+        /* Stock badge */
+        .stock-badge { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; font-weight: 500; flex-shrink: 0; }
+        .stock-in { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.22); box-shadow: 0 0 8px var(--green-dim); }
+        .stock-out { background: var(--red-dim); color: var(--red); border: 1px solid rgba(239,68,68,0.22); }
+
+        .best-chip { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.22); border-radius: 20px; font-size: 9px; letter-spacing: 0.10em; text-transform: uppercase; padding: 3px 9px; font-weight: 500; white-space: nowrap; box-shadow: 0 0 10px var(--green-dim); flex-shrink: 0; }
+
+        /* Size tabs */
+        .size-tabs { display: flex; gap: 6px; padding: 13px 18px 0; flex-wrap: wrap; }
+        .size-tab { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; padding: 5px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; transition: all 0.14s; outline: none; user-select: none; }
+        .size-tab:hover { border-color: var(--accent); color: var(--accent); }
+        .size-tab.active { background: var(--accent-dim); border-color: rgba(59,130,246,0.35); color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); box-shadow: 0 0 10px var(--accent-dim); }
+
+        /* Price area */
+        .price-area { padding: 16px 18px 14px; flex: 1; }
+        .price-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+        .price-big { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 28px; letter-spacing: -1.5px; line-height: 1; color: var(--accent); text-shadow: 0 0 24px var(--accent-glow); transition: color 0.15s, text-shadow 0.15s; }
+        .price-big.is-best-price { color: var(--green); text-shadow: 0 0 28px var(--green-glow); }
+        .price-unit { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; font-weight: 300; letter-spacing: 0; margin-left: 2px; }
+        .price-note { margin-top: 7px; font-size: 9px; font-style: italic; color: var(--muted); line-height: 1.5; }
+
+        /* Cost breakdown row */
+        .cost-breakdown {
+            margin-top: 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+        }
+        .cost-row-label { color: var(--muted); letter-spacing: 0.04em; }
+        .cost-row-value { font-weight: 500; color: var(--text); }
+        .cost-row-value.strike { text-decoration: line-through; color: var(--muted); font-weight: 400; }
+        .cost-row-value.discounted { color: var(--green); text-shadow: 0 0 8px var(--green-glow); font-weight: 500; }
+        .cost-divider { height: 1px; background: var(--border); margin: 2px 0; }
+        .cost-row.total .cost-row-label { font-weight: 500; color: var(--text); font-size: 11px; }
+        .cost-row.total .cost-row-value { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--green); text-shadow: 0 0 10px var(--green-glow); }
+
+        .divider { height: 1px; background: var(--border); margin: 0 18px; }
+
+        /* Actions */
+        .card-actions { padding: 12px 18px 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .discount-pill { display: flex; align-items: stretch; border: 1px solid rgba(249,115,22,0.28); border-radius: 8px; overflow: hidden; flex-shrink: 0; height: 30px; }
+        .discount-label-cell { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 0 7px; background: var(--surface2); border-right: 1px solid rgba(249,115,22,0.18); display: flex; align-items: center; }
+        .discount-code-btn { background: var(--orange-dim); border: none; padding: 0 9px; font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; color: var(--orange); text-shadow: 0 0 10px var(--orange-glow); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.14s; position: relative; }
+        .discount-code-btn:hover { background: rgba(249,115,22,0.18); }
+        .discount-code-btn svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.65; }
+        .discount-pct-cell { font-size: 10px; color: var(--orange); text-shadow: 0 0 8px var(--orange-glow); padding: 0 9px; border-left: 1px solid rgba(249,115,22,0.18); display: flex; align-items: center; background: var(--orange-dim); font-weight: 500; white-space: nowrap; letter-spacing: 0.04em; }
+
+        .copy-toast { position: absolute; top: -28px; left: 50%; transform: translateX(-50%) scale(0.85); background: var(--text); color: #fff; font-size: 9px; letter-spacing: 0.06em; padding: 4px 9px; border-radius: 6px; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s; z-index: 100; }
+        .copy-toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+        .shop-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--accent); color: #fff; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 0 14px; height: 30px; border-radius: 8px; box-shadow: 0 0 16px var(--accent-dim), 0 2px 6px rgba(59,130,246,0.18); transition: box-shadow 0.15s, transform 0.12s, background 0.15s; white-space: nowrap; flex-shrink: 0; margin-left: auto; }
+        .shop-btn:hover { background: #2563eb; box-shadow: 0 0 28px var(--accent-glow), 0 3px 10px rgba(59,130,246,0.22); transform: translateY(-1px); }
+        .shop-btn svg { width: 10px; height: 10px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* No results */
+        .no-results { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13px; }
+        .no-results strong { display: block; font-family: 'Syne', sans-serif; font-size: 18px; color: var(--text); margin-bottom: 8px; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Footer ── */
+        footer {
+            position: relative; z-index: 1;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+            margin-top: 20px;
+        }
+        .footer-inner {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 36px 36px 28px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: start;
+            gap: 32px;
+        }
+        .footer-brand .wordmark { font-size: 20px; letter-spacing: -1px; line-height: 1; margin-bottom: 8px; }
+        .footer-desc { font-size: 11px; color: var(--muted); line-height: 1.7; max-width: 300px; margin-bottom: 12px; }
+        .footer-disclaimer { font-size: 9px; color: var(--muted); line-height: 1.65; max-width: 340px; opacity: 0.7; }
+        .footer-right { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
+        .footer-links { display: flex; gap: 20px; flex-wrap: wrap; justify-content: flex-end; }
+        .footer-link { font-size: 11px; color: var(--muted); text-decoration: none; letter-spacing: 0.06em; transition: color 0.15s; }
+        .footer-link:hover { color: var(--accent); }
+        .footer-meta-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+        .footer-badge { display: flex; align-items: center; gap: 7px; background: var(--green-dim); border: 1px solid rgba(34,197,94,0.20); border-radius: 20px; padding: 5px 12px; font-size: 10px; color: var(--green); font-weight: 500; letter-spacing: 0.06em; }
+        .footer-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green-glow); position: relative; flex-shrink: 0; }
+        .footer-badge-dot::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--green); animation: livePulse 2s ease-out infinite; }
+        .footer-copy { font-size: 10px; color: var(--muted); opacity: 0.7; }
+        .footer-divider { max-width: 1168px; margin: 0 auto; height: 1px; background: var(--border); }
+        .footer-bottom { max-width: 1240px; margin: 0 auto; padding: 14px 36px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .footer-bottom-note { font-size: 9px; color: var(--muted); opacity: 0.6; letter-spacing: 0.04em; }
+        .footer-made { font-size: 9px; color: var(--muted); opacity: 0.6; letter-spacing: 0.06em; display: flex; align-items: center; gap: 5px; }
+        .footer-made span { color: var(--accent); text-shadow: 0 0 8px var(--accent-glow); opacity: 1; }
+
+        @media (max-width: 700px) {
+            .footer-inner { grid-template-columns: 1fr; }
+            .footer-right { align-items: flex-start; }
+            .footer-links, .footer-meta-row { justify-content: flex-start; }
+            .footer-divider { margin: 0 auto; }
+            .footer-bottom { padding: 12px 20px; flex-direction: column; align-items: flex-start; }
         }
 
         @media (max-width: 600px) {
-            header, main { padding-left: 20px; padding-right: 20px; }
-            header { flex-direction: column; align-items: flex-start; }
-        }
-
-        /* Entrance animation */
-        .card {
-            animation: fadeUp 0.4s ease both;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+            .wrap { padding: 0 16px 60px; }
+            header { padding: 36px 0 24px; }
+            .price-big { font-size: 24px; }
+            .toggle-meta { gap: 6px; }
+            .footer-inner { padding: 28px 20px 24px; }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div>
-        <div class="header-title">Peptide<span>Club</span></div>
-        <div class="header-sub">Research Compound Price Tracker</div>
+<!-- ── Intro animation overlay ── -->
+<div id="intro">
+    <div class="intro-wordmark-wrap">
+        <div class="intro-word">
+            <span class="intro-pep">Pe</span><span class="intro-rice">price</span>
+        </div>
     </div>
-    <div class="last-updated-tag" id="last-updated-tag">Loading prices…</div>
-</header>
+    <div class="intro-tag">Peptide Price Tracker</div>
+    <div class="intro-pulse"></div>
+</div>
 
-<main id="app"></main>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<div class="wrap" id="main-wrap">
+    <header>
+        <div>
+            <div class="wordmark">Pe<em>price</em></div>
+            <div class="tagline">Peptide Price Tracker</div>
+        </div>
+        <div class="live-badge">
+            <div class="live-dot-wrap">
+                <div class="live-dot-ring"></div>
+                <div class="live-dot"></div>
+            </div>
+            <span class="live-text">Live</span>
+            <span class="live-date" id="live-date">Loading…</span>
+        </div>
+    </header>
+
+    <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="search" type="text" placeholder="Search peptides or vendors…" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div id="app"></div>
+</div>
 
 <script>
-    const DATA_URL = 'data.json';
+    // ── Intro dismiss ──
+    setTimeout(() => {
+        document.getElementById('intro').classList.add('hide');
+        document.getElementById('main-wrap').classList.add('visible');
+    }, 2200);
 
-    function formatDate(ts) {
-        const d = new Date(ts * 1000);
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-
-    function daysAgo(ts) {
-        return Math.floor((Date.now() - ts * 1000) / 86400000);
-    }
-
-    function parseSize(sizeStr) {
-        return parseFloat(sizeStr); // e.g. "50mg" -> 50
-    }
-
-    function pricePerMg(pricePerML, sizeStr) {
-        const mg = parseSize(sizeStr);
-        if (!mg) return null;
-        return pricePerML / mg;
-    }
-
-    async function load() {
-        let data;
+    // ── Data ──
+    async function loadData() {
         try {
-            const res = await fetch(DATA_URL);
-            data = await res.json();
-        } catch(e) {
-            // Inline fallback data for demo purposes
-            data = {"icons":{"PeptideSciences":{"url":"https://i.ibb.co/VcmW0fyc/image.png","affiliateCode":"CLUB","discount":"35%"},"OnyxResearch":{"url":"https://i.ibb.co/RT9QJFJz/image.png","affiliateCode":"CLUB","discount":"42%"},"NuSciencePeptides":{"url":"https://i.ibb.co/bM1KZSWR/image.png","affiliateCode":"CLUB","discount":"31%"},"AminoClub":{"url":"https://i.ibb.co/Ps1grgRw/image.png","affiliateCode":"CLUB","discount":"20%"}},"peptides":{"GHK-Cu":[{"name":"PeptideSciences","sizes":{"50mg":{"pricePerML":1.4,"note":"More $ taken off for very lage purchases."}},"url":"https://www.peptidesciences.com/ghk-cu-50mg-copper-peptide","lastUpdated":1769731200},{"name":"AminoClub","sizes":{"50mg":{"pricePerML":1.47},"100mg":{"pricePerML":1.56}},"url":"https://aminoclub.com?utm_source=affiliate_marketing&code=CLUB","lastUpdated":1769731200},{"name":"NuSciencePeptides","sizes":{"50mg":{"pricePerML":0.89},"100mg":{"pricePerML":0.79}},"url":"https://nusciencepeptides.com/product/ghk-cu/","lastUpdated":1769731200}],"GLP-3-RT":[{"name":"Onyx Research","sizes":{"10mg":{"pricePerML":8.50},"20mg":{"pricePerML":7.75},"30mg":{"pricePerML":6.30},"60mg":{"pricePerML":4.66}},"url":"https://onyxresearch.shop/product/glp-3-rt/","lastUpdated":1768902480},{"name":"NuSciencePeptides","sizes":{"5mg":{"pricePerML":17.80},"10mg":{"pricePerML":13.90},"20mg":{"pricePerML":11.45},"30mg":{"pricePerML":9.60},"40mg":{"pricePerML":9.96}},"url":"https://nusciencepeptides.com/product/glp-3-rt/","lastUpdated":1767902480}]}};
+            const r = await fetch('data.json');
+            return await r.json();
+        } catch {
+            return {"icons":{"PeptideSciences":{"url":"https://i.ibb.co/VcmW0fyc/image.png","affiliateCode":"CLUB","discount":"35%"},"OnyxResearch":{"url":"https://i.ibb.co/RT9QJFJz/image.png","affiliateCode":"CLUB","discount":"42%"},"NuSciencePeptides":{"url":"https://i.ibb.co/bM1KZSWR/image.png","affiliateCode":"CLUB","discount":"31%"},"AminoClub":{"url":"https://i.ibb.co/Ps1grgRw/image.png","affiliateCode":"CLUB","discount":"20%"}},"peptides":{"GHK-Cu":[{"name":"PeptideSciences","sizes":{"50mg":{"pricePerML":1.4,"note":"Higher sale for bulk bottle purchases."}},"url":"https://www.peptidesciences.com/ghk-cu-50mg-copper-peptide","lastUpdated":1769731200,"in-stock":true},{"name":"AminoClub","sizes":{"50mg":{"pricePerML":1.47},"100mg":{"pricePerML":1.56}},"url":"https://aminoclub.com?utm_source=affiliate_marketing&code=CLUB","lastUpdated":1769731200,"in-stock":true},{"name":"NuSciencePeptides","sizes":{"50mg":{"pricePerML":0.89},"100mg":{"pricePerML":0.79}},"url":"https://nusciencepeptides.com/product/ghk-cu/","lastUpdated":1769731200,"in-stock":true}],"GLP-3-RT":[{"name":"Onyx Research","sizes":{"10mg":{"pricePerML":8.50},"20mg":{"pricePerML":7.75},"30mg":{"pricePerML":6.30},"60mg":{"pricePerML":4.66}},"url":"https://onyxresearch.shop/product/glp-3-rt/","lastUpdated":1768902480,"in-stock":true},{"name":"NuSciencePeptides","sizes":{"5mg":{"pricePerML":17.80},"10mg":{"pricePerML":13.90},"20mg":{"pricePerML":11.45},"30mg":{"pricePerML":9.60},"40mg":{"pricePerML":9.96}},"url":"https://nusciencepeptides.com/product/glp-3-rt/","lastUpdated":1767902480,"in-stock":true}]}};
         }
-        render(data);
+    }
+
+    function fmtDate(ts) {
+        return new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    function daysOld(ts) { return Math.floor((Date.now() - ts * 1000) / 86400000); }
+
+    function sortedSizes(sizesObj) {
+        return Object.entries(sizesObj)
+            .map(([s, v]) => ({ size: s, mg: parseFloat(s), pricePerMg: v.pricePerML, note: v.note }))
+            .sort((a, b) => a.mg - b.mg)
+            .slice(0, 5);
     }
 
     function getIconInfo(name, icons) {
-        // Try exact match first, then loose
         if (icons[name]) return icons[name];
-        const key = Object.keys(icons).find(k => k.toLowerCase().replace(/\s/g,'') === name.toLowerCase().replace(/\s/g,''));
+        const key = Object.keys(icons).find(k => k.toLowerCase().replace(/\s+/g,'') === name.toLowerCase().replace(/\s+/g,''));
         return key ? icons[key] : null;
     }
 
-    function render(data) {
-        const app = document.getElementById('app');
-        const icons = data.icons;
-        const peptides = data.peptides;
+    function initials(name) {
+        return name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+    }
 
-        // Find global best price/mg for badge
-        // Per peptide, compute all price/mg values, find min
-        const peptideNames = Object.keys(peptides);
+    function copyText(code, btn) {
+        navigator.clipboard.writeText(code).catch(() => {});
+        const toast = btn.querySelector('.copy-toast');
+        if (!toast) return;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1400);
+    }
 
-        // Update last updated
-        let allTimestamps = [];
-        peptideNames.forEach(p => peptides[p].forEach(v => { if(v.lastUpdated) allTimestamps.push(v.lastUpdated); }));
-        const latestTs = Math.max(...allTimestamps);
-        document.getElementById('last-updated-tag').textContent = `Updated ${formatDate(latestTs)}`;
+    // Parse discount string like "35%" → 0.35
+    function parseDiscount(discountStr) {
+        return parseFloat(discountStr) / 100;
+    }
 
-        peptideNames.forEach((peptideName, pi) => {
-            const vendors = peptides[peptideName];
+    function buildCard(vendor, globalBestPrice, icons, animDelay) {
+        const iconInfo = getIconInfo(vendor.name, icons);
+        const sizes = sortedSizes(vendor.sizes);
+        const vendorBest = Math.min(...sizes.map(s => s.pricePerMg));
+        const isGlobalBest = Math.abs(vendorBest - globalBestPrice) < 0.00001;
+        const fresh = daysOld(vendor.lastUpdated) < 14;
+        const inStock = vendor['in-stock'] !== false; // default true if missing
+        const discountRate = iconInfo ? parseDiscount(iconInfo.discount) : 0;
 
-            // Compute all price/mg values to find global best for this peptide
-            let allPricesPerMg = [];
-            vendors.forEach(v => {
-                Object.entries(v.sizes).forEach(([size, info]) => {
-                    const p = pricePerMg(info.pricePerML, size);
-                    if (p != null) allPricesPerMg.push(p);
-                });
+        const card = document.createElement('div');
+        card.className = 'card' + (isGlobalBest ? ' is-best' : '');
+        card.style.animationDelay = animDelay + 's';
+
+        // ── Top strip ──
+        const top = document.createElement('div');
+        top.className = 'card-top';
+
+        if (iconInfo && iconInfo.url) {
+            const img = document.createElement('img');
+            img.className = 'vendor-logo'; img.src = iconInfo.url; img.alt = vendor.name;
+            img.onerror = function() {
+                const fb = document.createElement('div'); fb.className = 'logo-fallback'; fb.textContent = initials(vendor.name); this.replaceWith(fb);
+            };
+            top.appendChild(img);
+        } else {
+            const fb = document.createElement('div'); fb.className = 'logo-fallback'; fb.textContent = initials(vendor.name); top.appendChild(fb);
+        }
+
+        const vi = document.createElement('div'); vi.className = 'vendor-info';
+        const stockClass = inStock ? 'stock-in' : 'stock-out';
+        const stockLabel = inStock ? 'In Stock' : 'Out of Stock';
+        vi.innerHTML = `
+    <div class="vendor-name">${vendor.name}</div>
+    <div class="vendor-meta-row">
+      <div class="vendor-date">
+        <span class="dot ${fresh ? 'dot-fresh' : 'dot-stale'}"></span>
+        ${fmtDate(vendor.lastUpdated)}
+      </div>
+      <span class="stock-badge ${stockClass}">${stockLabel}</span>
+    </div>`;
+        top.appendChild(vi);
+
+        if (isGlobalBest) {
+            const chip = document.createElement('div'); chip.className = 'best-chip'; chip.textContent = 'Best'; top.appendChild(chip);
+        }
+        card.appendChild(top);
+
+        // ── Size tabs ──
+        const tabsEl = document.createElement('div'); tabsEl.className = 'size-tabs';
+        const cheapestIdx = sizes.indexOf(sizes.reduce((a, b) => a.pricePerMg < b.pricePerMg ? a : b));
+        sizes.forEach((s, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'size-tab' + (i === cheapestIdx ? ' active' : '');
+            btn.textContent = s.size;
+            btn.addEventListener('click', () => {
+                tabsEl.querySelectorAll('.size-tab').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                renderPrice(i);
             });
-            const bestPricePerMg = Math.min(...allPricesPerMg);
+            tabsEl.appendChild(btn);
+        });
+        card.appendChild(tabsEl);
 
-            const section = document.createElement('div');
-            section.className = 'peptide-section';
-            section.style.animationDelay = `${pi * 0.08}s`;
+        // ── Price area ──
+        const priceArea = document.createElement('div'); priceArea.className = 'price-area'; card.appendChild(priceArea);
 
-            const label = document.createElement('div');
-            label.className = 'peptide-label';
-            label.textContent = peptideName;
-            section.appendChild(label);
+        function renderPrice(idx) {
+            const s = sizes[idx];
+            const isBest = Math.abs(s.pricePerMg - globalBestPrice) < 0.00001;
+            const originalPricePerMg = s.pricePerMg;
+            const discountedPricePerMg = originalPricePerMg * (1 - discountRate);
+            const totalOriginal = originalPricePerMg * s.mg;
+            const totalDiscounted = discountedPricePerMg * s.mg;
 
-            const grid = document.createElement('div');
-            grid.className = 'cards-grid';
-
-            vendors.forEach((vendor, vi) => {
-                const iconInfo = getIconInfo(vendor.name, icons);
-                const isBestVendor = Object.entries(vendor.sizes).some(([size, info]) => {
-                    const p = pricePerMg(info.pricePerML, size);
-                    return Math.abs(p - bestPricePerMg) < 0.0001;
-                });
-
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.style.animationDelay = `${pi * 0.08 + vi * 0.06}s`;
-
-                let html = '';
-
-                if (isBestVendor) {
-                    html += `<div class="best-badge">Best Price</div>`;
-                }
-
-                // Header
-                const logoSrc = iconInfo ? iconInfo.url : '';
-                html += `<div class="card-header">`;
-                if (logoSrc) {
-                    html += `<img class="vendor-logo" src="${logoSrc}" alt="${vendor.name}" onerror="this.style.display='none'">`;
-                }
-                html += `<div>
-        <div class="vendor-name">${vendor.name}</div>
-        <div class="vendor-peptide">
-          <span class="${daysAgo(vendor.lastUpdated) < 14 ? 'fresh-dot' : 'stale-dot'} stale-dot"></span>
-          ${formatDate(vendor.lastUpdated)}
+            priceArea.innerHTML = `
+      <div class="price-label">Price per mg</div>
+      <div>
+        <span class="price-big ${isBest ? 'is-best-price' : ''}">
+          $${originalPricePerMg.toFixed(3)}<span class="price-unit">/mg</span>
+        </span>
+      </div>
+      ${s.note ? `<div class="price-note">${s.note}</div>` : ''}
+      <div class="cost-breakdown">
+        <div class="cost-row">
+          <span class="cost-row-label">Original /mg</span>
+          <span class="cost-row-value strike">$${originalPricePerMg.toFixed(3)}</span>
         </div>
-      </div></div>`;
+        <div class="cost-row">
+          <span class="cost-row-label">After code /mg</span>
+          <span class="cost-row-value discounted">$${discountedPricePerMg.toFixed(3)}</span>
+        </div>
+        <div class="cost-divider"></div>
+        <div class="cost-row">
+          <span class="cost-row-label">Total (${s.size})</span>
+          <span class="cost-row-value strike">$${totalOriginal.toFixed(2)}</span>
+        </div>
+        <div class="cost-row total">
+          <span class="cost-row-label">Total with code</span>
+          <span class="cost-row-value discounted">$${totalDiscounted.toFixed(2)}</span>
+        </div>
+      </div>
+    `;
+        }
+        renderPrice(cheapestIdx);
 
-                // Sizes table
-                html += `<table class="sizes-table">
-        <thead><tr>
-          <th>Size</th>
-          <th>$/mL</th>
-          <th>$/mg</th>
-        </tr></thead>
-        <tbody>`;
+        // ── Divider ──
+        const dv = document.createElement('div'); dv.className = 'divider'; card.appendChild(dv);
 
-                Object.entries(vendor.sizes).forEach(([size, info]) => {
-                    const ppm = pricePerMg(info.pricePerML, size);
-                    const isBestRow = Math.abs(ppm - bestPricePerMg) < 0.0001;
-                    html += `<tr class="${isBestRow ? 'best-row' : ''}">
-          <td><span class="size-tag">${size}</span></td>
-          <td>$${info.pricePerML.toFixed(2)}</td>
-          <td><span class="price-per-mg">$${ppm.toFixed(3)}</span></td>
-        </tr>`;
-                    if (info.note) {
-                        html += `<tr><td colspan="3" class="note-text">${info.note}</td></tr>`;
-                    }
-                });
+        // ── Actions ──
+        const actions = document.createElement('div'); actions.className = 'card-actions';
 
-                html += `</tbody></table>`;
+        if (iconInfo) {
+            const pill = document.createElement('div'); pill.className = 'discount-pill';
+            // Format: "35% OFF"
+            const offLabel = iconInfo.discount.replace('%', '') + '% OFF';
+            pill.innerHTML = `
+      <div class="discount-label-cell">Code</div>
+      <button class="discount-code-btn">
+        <span class="copy-toast">Copied!</span>
+        ${iconInfo.affiliateCode}
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+      <div class="discount-pct-cell">${offLabel}</div>
+    `;
+            pill.querySelector('.discount-code-btn').addEventListener('click', function() { copyText(iconInfo.affiliateCode, this); });
+            actions.appendChild(pill);
+        }
 
-                // Footer
-                html += `<div class="card-footer">`;
-                if (iconInfo) {
-                    html += `<div class="discount-tag">
-          <span class="discount-code">${iconInfo.affiliateCode}</span>
-          <span class="discount-pct">${iconInfo.discount} off</span>
-        </div>`;
-                }
-                html += `<a class="shop-btn" href="${vendor.url}" target="_blank" rel="noopener">
-        Shop
-        <svg viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>
-      </a>`;
-                html += `</div>`;
+        const shopBtn = document.createElement('a'); shopBtn.className = 'shop-btn'; shopBtn.href = vendor.url; shopBtn.target = '_blank'; shopBtn.rel = 'noopener';
+        shopBtn.innerHTML = `Shop <svg viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>`;
+        actions.appendChild(shopBtn);
+        card.appendChild(actions);
 
-                card.innerHTML = html;
-                grid.appendChild(card);
+        return card;
+    }
+
+    // ── Main ──
+    let allBlocks = [];
+
+    async function init() {
+        const data = await loadData();
+        const { icons, peptides } = data;
+        const app = document.getElementById('app');
+
+        const allTs = Object.values(peptides).flat().map(v => v.lastUpdated).filter(Boolean);
+        document.getElementById('live-date').textContent = `Updated ${fmtDate(Math.max(...allTs))}`;
+
+        Object.entries(peptides).forEach(([peptideName, vendors]) => {
+            const globalBest = Math.min(...vendors.flatMap(v => Object.values(v.sizes).map(s => s.pricePerML)));
+            const sorted = [...vendors].sort((a, b) => {
+                const aBest = Math.min(...Object.values(a.sizes).map(s => s.pricePerML));
+                const bBest = Math.min(...Object.values(b.sizes).map(s => s.pricePerML));
+                return aBest - bBest;
             });
 
-            section.appendChild(grid);
-            app.appendChild(section);
+            const block = document.createElement('div');
+            block.className = 'peptide-block';
+
+            const toggle = document.createElement('button');
+            toggle.className = 'peptide-toggle';
+            toggle.setAttribute('aria-expanded', 'false');
+            toggle.innerHTML = `
+      <span class="toggle-name">${peptideName}</span>
+      <div class="toggle-meta">
+        <span class="vendor-count">${sorted.length} vendor${sorted.length !== 1 ? 's' : ''}</span>
+        <span class="best-price-preview">from $${globalBest.toFixed(3)}/mg</span>
+      </div>
+      <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    `;
+            toggle.addEventListener('click', () => {
+                const isOpen = block.classList.toggle('open');
+                toggle.setAttribute('aria-expanded', isOpen);
+            });
+            block.appendChild(toggle);
+
+            const body = document.createElement('div'); body.className = 'accordion-body';
+            const inner = document.createElement('div'); inner.className = 'accordion-inner';
+            const row = document.createElement('div'); row.className = 'cards-row';
+
+            sorted.forEach((vendor, vi) => {
+                row.appendChild(buildCard(vendor, globalBest, icons, (vi * 0.06).toFixed(2)));
+            });
+
+            inner.appendChild(row); body.appendChild(inner); block.appendChild(body);
+            app.appendChild(block);
+
+            allBlocks.push({ el: block, peptideName: peptideName.toLowerCase(), vendorNames: sorted.map(v => v.name.toLowerCase()) });
+        });
+
+        // Open first by default
+        if (allBlocks.length > 0) {
+            allBlocks[0].el.classList.add('open');
+            allBlocks[0].el.querySelector('.peptide-toggle').setAttribute('aria-expanded', 'true');
+        }
+
+        // Search
+        const noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.innerHTML = '<strong>No results</strong>Try a different peptide or vendor name.';
+        noResults.style.display = 'none';
+        app.appendChild(noResults);
+
+        document.getElementById('search').addEventListener('input', function() {
+            const q = this.value.trim().toLowerCase();
+            let any = false;
+            allBlocks.forEach(({ el, peptideName, vendorNames }) => {
+                const match = !q || peptideName.includes(q) || vendorNames.some(v => v.includes(q));
+                el.style.display = match ? '' : 'none';
+                if (match) {
+                    any = true;
+                    if (q) { el.classList.add('open'); el.querySelector('.peptide-toggle').setAttribute('aria-expanded', 'true'); }
+                }
+            });
+            noResults.style.display = any ? 'none' : 'block';
         });
     }
 
-    load();
+    init();
+</script>
+<!-- ── Footer ── -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <div class="wordmark">Pe<em>price</em></div>
+            <div class="footer-desc">
+                An independent price aggregator for research peptide compounds. All prices are updated manually and reflect vendor listings before any discount codes are applied.
+            </div>
+            <div class="footer-disclaimer">
+                ⚠ For research purposes only. Not intended for human consumption. All products listed are sold strictly for laboratory research use. Always consult applicable regulations before purchasing.
+            </div>
+        </div>
+        <div class="footer-right">
+            <div class="footer-links">
+                <a class="footer-link" href="#">About</a>
+                <a class="footer-link" href="#">Submit a Vendor</a>
+                <a class="footer-link" href="#">Report a Price</a>
+            </div>
+            <div class="footer-meta-row">
+                <div class="footer-badge">
+                    <div class="footer-badge-dot"></div>
+                    Prices Live
+                </div>
+                <div class="footer-copy" id="footer-year">© 2025 Peprice</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+        <div class="footer-bottom-note">
+            Affiliate links may earn a commission at no extra cost to you. Prices shown are pre-discount and subject to change.
+        </div>
+        <div class="footer-made">Built with <span>♥</span> for the research community</div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('footer-year').textContent = `© ${new Date().getFullYear()} Peprice`;
 </script>
 </body>
 </html>

@@ -30,11 +30,12 @@
         "sizes": {
           "50mg": {
             "pricePerML": 1.4,
-            "note": "More $ taken off for very lage purchases."
+            "note": "Higher sale for bulk bottle purchases."
           }
         },
         "url": "https://www.peptidesciences.com/ghk-cu-50mg-copper-peptide",
-        "lastUpdated": 1769731200
+        "lastUpdated": 1769731200,
+        "in-stock": true
       },
       {
         "name": "AminoClub",
@@ -47,7 +48,8 @@
           }
         },
         "url": "https://aminoclub.com?utm_source=affiliate_marketing&code=CLUB",
-        "lastUpdated": 1769731200
+        "lastUpdated": 1769731200,
+        "in-stock": true
       },
       {
         "name": "NuSciencePeptides",
@@ -60,7 +62,8 @@
           }
         },
         "url": "https://nusciencepeptides.com/product/ghk-cu/",
-        "lastUpdated": 1769731200
+        "lastUpdated": 1769731200,
+        "in-stock": true
       }
     ],
 
@@ -83,7 +86,8 @@
           }
         },
         "url": "https://onyxresearch.shop/product/glp-3-rt/",
-        "lastUpdated": 1768902480
+        "lastUpdated": 1768902480,
+        "in-stock": true
       },
       {
         "name": "NuSciencePeptides",
@@ -106,7 +110,8 @@
         },
         "url": "https://nusciencepeptides.com/product/glp-3-rt/",
         "currentPricePerML": 13.8,
-        "lastUpdated": 1767902480
+        "lastUpdated": 1767902480,
+        "in-stock": true
       }
     ]
   }
